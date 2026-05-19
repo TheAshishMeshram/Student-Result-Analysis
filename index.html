@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Results Analysis System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- Top Progress Loading Bar -->
+  <div id="top-loading-bar" class="top-loading-bar"></div>
+
+  <!-- Global Splash Loader -->
+  <div id="global-loader" class="global-loader">
+    <div class="loader-content">
+      <div style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+        <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="url(#goldGradientLoader)" stroke-width="1.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <linearGradient id="goldGradientLoader" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#d4af37" />
+              <stop offset="50%" stop-color="#b89047" />
+              <stop offset="100%" stop-color="#aa7c11" />
+            </linearGradient>
+          </defs>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <circle cx="12" cy="11" r="2" fill="url(#goldGradientLoader)"></circle>
+        </svg>
+      </div>
+      <h2 class="loader-title">Result-Seeker</h2>
+      <div class="loader-bar-container">
+        <div class="loader-bar"></div>
+      </div>
+      <p class="loader-sub">Preparing academic dashboard...</p>
+    </div>
+  </div>
+
+  <!-- 3D Canvas Background -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVIGATION HEADER -->
+  <header class="header" id="app-header">
+    <div class="header-brand">
+      RESULT-SEEKER
+    </div>
+
+    <!-- Public Navigation links (visible on landing) -->
+    <nav class="header-nav" id="public-nav">
+      <button class="nav-btn active" onclick="showView('login')">Home</button>
+      <button class="nav-btn" onclick="openAboutModal()">About</button>
+      <button class="nav-btn" onclick="openContactModal()">Contact Us</button>
+    </nav>
+
+    <!-- Admin Navigation links -->
+    <nav class="header-nav" id="admin-nav" style="display: none;">
+      <button class="nav-btn active" id="btn-dashboard" onclick="showView('dashboard')">Dashboard</button>
+      <button class="nav-btn" id="btn-students" onclick="showView('students')">Students</button>
+      <button class="nav-btn" id="btn-results" onclick="showView('results')">Results</button>
+      <button class="nav-btn" id="btn-analysis" onclick="showView('analysis')">Analysis</button>
+      <button class="nav-btn" id="btn-reports" onclick="showView('reports')">Reports</button>
+    </nav>
+
+    <!-- Student Navigation links -->
+    <nav class="header-nav" id="student-nav" style="display: none;">
+      <button class="nav-btn active" id="btn-student-dashboard" onclick="showView('student-dashboard')">My
+        Dashboard</button>
+      <button class="nav-btn" id="btn-student-reports" onclick="showView('student-reports')">My Report</button>
+    </nav>
+
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <!-- Dark/Light Mode Toggle Button -->
+      <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme">
+        <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+
+      <div class="user-profile" id="user-profile" style="display: none;">
+        <div class="user-avatar" id="avatar-letter">A</div>
+        <div class="user-info">
+          <span class="user-name" id="profile-name">Admin User</span>
+          <span class="user-role" id="profile-role">Administrator</span>
+        </div>
+        <button class="nav-btn" onclick="logout()"
+          style="margin-left: 10px; border: 1px solid rgba(255,255,255,0.12)">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- LOGIN VIEW -->
+  <div id="view-login" class="view active">
+    <div class="login-container">
+      <!-- Animated Visual Hero Section -->
+      <div class="login-hero">
+        <div class="login-hero-glow"></div>
+        <img src="hero.png" alt="Academic Analytics" class="login-hero-img" />
+        <div class="login-hero-badge float-animation-1">
+          <div class="badge-icon">📊</div>
+          <div>
+            <div class="badge-title">Analytics</div>
+            <div class="badge-desc">Real-time charts</div>
+          </div>
+        </div>
+        <div class="login-hero-badge float-animation-2">
+          <div class="badge-icon">🏆</div>
+          <div>
+            <div class="badge-title">Top Rankers</div>
+            <div class="badge-desc">Leaderboards</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="login-card">
+        <div class="login-logo">
+          <div style="display: flex; justify-content: center; margin-bottom: 1.25rem;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="url(#goldGradientLogin)"
+              stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"
+              style="filter: drop-shadow(0 4px 10px rgba(184, 144, 71, 0.25));">
+              <defs>
+                <linearGradient id="goldGradientLogin" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#d4af37" />
+                  <stop offset="50%" stop-color="#b89047" />
+                  <stop offset="100%" stop-color="#aa7c11" />
+                </linearGradient>
+              </defs>
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="M12 6v11M9 10h6"></path>
+              <circle cx="12" cy="11" r="1.5" fill="url(#goldGradientLogin)"></circle>
+            </svg>
+          </div>
+          <h1
+            style="font-family: 'DM Serif Display', serif; font-size: 2.2rem; font-weight: 500; background: linear-gradient(135deg, #2f271d 0%, #aa7c11 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.01em; margin-bottom: 4px;">
+            Result-Seeker</h1>
+          <p>Academic Analytics & Portals</p>
+        </div>
+
+        <div id="login-alert" class="alert alert-error"></div>
+
+        <div class="login-tabs">
+          <button id="tab-student" class="login-tab-btn active" onclick="switchLoginTab('student')">Student
+            Access</button>
+          <button id="tab-admin" class="login-tab-btn" onclick="switchLoginTab('admin')">Admin Portal</button>
+        </div>
+
+        <!-- Student Access Form -->
+        <div id="login-fields-student" class="login-fields active">
+          <div class="form-group">
+            <label for="login-roll">Student Roll Number</label>
+            <input type="text" id="login-roll" placeholder="e.g. 2026001"
+              onkeydown="handleLoginKey(event, 'student')" />
+          </div>
+          <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="loginStudent()">Access
+            Dashboard</button>
+        </div>
+
+        <!-- Admin Access Form -->
+        <div id="login-fields-admin" class="login-fields">
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" placeholder="Username" onkeydown="handleLoginKey(event, 'admin')" />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="Password"
+              onkeydown="handleLoginKey(event, 'admin')" />
+          </div>
+          <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="loginAdmin()">Sign
+            In</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Student -->
+  <div class="modal-overlay" id="modal-student">
+    <div class="modal">
+      <h2 id="student-modal-title">Add Student</h2>
+      <div id="modal-alert" class="alert"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Roll Number</label>
+          <input type="text" id="m-roll" placeholder="e.g. 2026001" />
+        </div>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="m-name" placeholder="Student name" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Branch</label>
+          <select id="m-class">
+            <option value="CSE">CSE</option>
+            <option value="CSE-DS">CSE-DS</option>
+            <option value="AI">AI</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select id="m-gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-student')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveStudent()">Save Student</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Result -->
+  <div class="modal-overlay" id="modal-result">
+    <div class="modal">
+      <h2>Add Result</h2>
+      <div id="result-modal-alert" class="alert"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Student</label>
+          <select id="r-student"></select>
+        </div>
+        <div class="form-group">
+          <label>Exam Type</label>
+          <select id="r-exam">
+            <option>Unit Test 1</option>
+            <option>Unit Test 2</option>
+            <option>Mid-Term</option>
+            <option>Final Exam</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Academic Year</label>
+        <select id="r-year">
+          <option>2024-25</option>
+          <option>2023-24</option>
+        </select>
+      </div>
+      <div id="subjects-inputs" style="max-height: 250px; overflow-y: auto; padding-right: 5px;"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-result')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveResult()">Save Result</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD (ADMIN) -->
+  <div id="view-dashboard" class="view">
+    <div class="container">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Overview of academic performance across all students</p>
+      </div>
+      <div class="stat-grid" id="dash-stats"></div>
+
+      <div class="two-col" style="margin-bottom: 2rem">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Grade Distribution</span></div>
+          <div class="card-body">
+            <div class="bar-chart" id="grade-bar-chart"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Top Performers</span></div>
+          <div class="card-body">
+            <div id="top-performers-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Branch-wise Average</span></div>
+          <div class="card-body">
+            <div id="class-avg-chart" class="bar-chart"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Subject Performance</span></div>
+          <div class="card-body">
+            <div id="subject-perf-chart" class="bar-chart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENTS (ADMIN) -->
+  <div id="view-students" class="view">
+    <div class="container">
+      <div class="page-header">
+        <h1>Students</h1>
+        <p>Manage student records and profiles</p>
+      </div>
+      <div id="student-alert" class="alert"></div>
+      <div class="search-bar">
+        <input type="text" id="student-search" placeholder="Search by name or roll number..."
+          oninput="renderStudentTable()" />
+        <select id="student-class-filter" onchange="renderStudentTable()">
+          <option value="">All Branches</option>
+          <option>CSE</option>
+          <option>CSE-DS</option>
+          <option>AI</option>
+        </select>
+        <button class="btn btn-primary" onclick="openStudentModal()">+ Add Student</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Gender</th>
+                <th>Exams</th>
+                <th>Avg %</th>
+                <th>Grade</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="student-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS (ADMIN) -->
+  <div id="view-results" class="view">
+    <div class="container">
+      <div class="page-header">
+        <h1>Results Entry</h1>
+        <p>Enter and manage exam results for students</p>
+      </div>
+      <div id="result-alert" class="alert"></div>
+      <div class="search-bar">
+        <input type="text" id="result-search" placeholder="Search student..." oninput="renderResultTable()" />
+        <select id="result-exam-filter" onchange="renderResultTable()">
+          <option value="">All Exams</option>
+          <option>Unit Test 1</option>
+          <option>Unit Test 2</option>
+          <option>Mid-Term</option>
+          <option>Final Exam</option>
+        </select>
+        <button class="btn btn-primary" onclick="openResultModal()">+ Add Result</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Exam</th>
+                <th>Year</th>
+                <th>Marks</th>
+                <th>Percentage</th>
+                <th>Grade</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="result-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYSIS (ADMIN) -->
+  <div id="view-analysis" class="view">
+    <div class="container">
+      <div class="page-header">
+        <h1>Analysis</h1>
+        <p>Deep dive into student performance trends</p>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-btn-rank" onclick="switchTab('rank')">Rankings</button>
+        <button class="tab-btn" id="tab-btn-subject" onclick="switchTab('subject')">By Subject</button>
+        <button class="tab-btn" id="tab-btn-class" onclick="switchTab('class')">By Class</button>
+        <button class="tab-btn" id="tab-btn-fail" onclick="switchTab('fail')">Fail Analysis</button>
+      </div>
+
+      <div id="tab-rank" class="tab-view">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Student Rankings</span>
+            <select id="rank-exam-filter" onchange="renderRankings()" style="width:auto;">
+              <option value="">All Exams</option>
+              <option>Unit Test 1</option>
+              <option>Unit Test 2</option>
+              <option>Mid-Term</option>
+              <option>Final Exam</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div id="rankings-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-subject" class="tab-view" style="display:none">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Subject-wise Performance</span></div>
+          <div class="card-body">
+            <div id="subject-analysis"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-class" class="tab-view" style="display:none">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Branch-wise Performance</span></div>
+          <div class="card-body">
+            <div id="class-analysis"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-fail" class="tab-view" style="display:none">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Students Requiring Attention</span></div>
+          <div class="card-body">
+            <div id="fail-analysis"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORTS (ADMIN) -->
+  <div id="view-reports" class="view">
+    <div class="container">
+      <div class="page-header">
+        <h1>Report Card</h1>
+        <p>Generate individual student report cards</p>
+      </div>
+      <div class="card" style="margin-bottom: 2rem">
+        <div class="card-body">
+          <div class="form-row" style="align-items:flex-end">
+            <div class="form-group" style="margin-bottom:0">
+              <label>Select Student</label>
+              <select id="report-student-sel"></select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label>Exam</label>
+              <select id="report-exam-sel">
+                <option value="">All Exams</option>
+                <option>Unit Test 1</option>
+                <option>Unit Test 2</option>
+                <option>Mid-Term</option>
+                <option>Final Exam</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+          </div>
+        </div>
+      </div>
+      <div id="report-output"></div>
+    </div>
+  </div>
+
+  <!-- STUDENT DASHBOARD (STUDENT PORTAL) -->
+  <div id="view-student-dashboard" class="view">
+    <div class="container">
+      <div class="welcome-header">
+        <div class="welcome-info">
+          <h1 id="student-welcome-title">Welcome back, Student!</h1>
+          <p>Your academic overview, charts and subject performance analysis</p>
+        </div>
+        <div class="grade-badge" id="student-overall-grade">Grade -</div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Class Rank</div>
+          <div class="stat-value" id="student-rank">#--</div>
+          <div class="stat-sub" id="student-rank-sub">Out of -- students</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Overall Average</div>
+          <div class="stat-value" id="student-avg-score">--%</div>
+          <div class="stat-sub">Across all exams</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Exams Completed</div>
+          <div class="stat-value" id="student-exams-count">--</div>
+          <div class="stat-sub">Recorded entries</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Academic Status</div>
+          <div class="stat-value" id="student-status" style="color: var(--accent);">PASS</div>
+          <div class="stat-sub" id="student-failed-subjects">No backlogs</div>
+        </div>
+      </div>
+
+      <!-- Subject performance circular progress bars -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <span class="card-title">Subject Performance Analysis (Circular Charts)</span>
+          <div style="font-size: 11px; color: var(--text3)">Radial bars representing average score in each subject</div>
+        </div>
+        <div class="card-body">
+          <div class="circular-charts-grid" id="student-circular-charts">
+            <!-- Dynamically generated SVG progress circles will go here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Student detail columns -->
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Exam Grades</span>
+          </div>
+          <div class="card-body">
+            <div id="student-exam-history-list" style="display:flex; flex-direction:column; gap:12px;"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Performance Trend (Branch Avg vs You)</span>
+          </div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:14px;" id="student-comparison-list">
+            <!-- Comparisons list -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENT REPORT CARD VIEW (STUDENT PORTAL) -->
+  <div id="view-student-reports" class="view">
+    <div class="container">
+      <div class="page-header"
+        style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;">
+        <div>
+          <h1>My Report Card</h1>
+          <p>View or print your academic transcript</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <select id="student-report-exam-sel" onchange="renderStudentReportCard()"
+            style="width: auto; min-width: 150px;"></select>
+          <button class="btn btn-primary" onclick="window.print()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Print Report
+          </button>
+        </div>
+      </div>
+      <div id="student-report-output"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: About Us -->
+  <div class="modal-overlay" id="modal-about">
+    <div class="modal" style="max-width: 500px;">
+      <h2>About Result-Seeker</h2>
+      <div
+        style="font-size: 13px; color: var(--text2); display: flex; flex-direction: column; gap: 12px; line-height: 1.6; text-align: left; margin-top: 15px;">
+        <p><strong>Result-Seeker</strong> is a premium academic results analytics portal tailored specifically for
+          engineering curriculum tracking (CSE, CSE-DS, and AI branches).</p>
+        <p>Featuring a 3D responsive design system, radial performance gauge charts, and customized analytics summaries,
+          it gives teachers and students a fast, visual platform to record and evaluate grades.</p>
+        <p>© 2026 Result-Seeker made by Ashish Meshram. All rights reserved.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('modal-about')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Contact Us -->
+  <div class="modal-overlay" id="modal-contact">
+    <div class="modal" style="max-width: 500px;">
+      <h2>Contact Support Desk</h2>
+      <div
+        style="font-size: 13px; color: var(--text2); display: flex; flex-direction: column; gap: 14px; text-align: left; margin-top: 15px;">
+        <p>Need help accessing your dashboard or updating records? Get in touch with our helpdesk:</p>
+        <p>📧 <strong>Email:</strong> iashishmeshram@jdcoem.ac.in</p>
+        <p>📞 <strong>Phone:</strong> +91 (999) 111-XXXX</p>
+        <p>🏢 <strong>Office:</strong> Nagpur,Maharashtra,India</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('modal-contact')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
